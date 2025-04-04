@@ -1,8 +1,9 @@
 import csv
 import random
+import constants as ct
 
 # 在庫状況の選択肢
-stock_options = ["あり", "残りわずか", "なし"]
+stock_options = [ct.STOCK_STATUS_AVAILABLE, ct.STOCK_STATUS_LOW, ct.STOCK_STATUS_NONE]
 
 # CSVファイルを読み込む
 input_file = "data/products.csv"
