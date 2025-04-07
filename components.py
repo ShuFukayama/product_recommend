@@ -58,8 +58,14 @@ def display_product(result):
     logger = logging.getLogger(ct.LOGGER_NAME)
 
     # LLMレスポンスのテキストを辞書に変換
-    product_lines = result[0].page_content.split("\n")
-    product = {item.split(": ")[0]: item.split(": ")[1] for item in product_lines}
+    try:
+        product_lines = result[0].page_content.split("\n")
+        product = {item.split(": ")[0]: item.split(": ")[1] for item in product_lines}
+    except Exception as e:
+        logger.error(f"Error processing result: {e}")
+        logger.error(f"Result: {result}")
+        st.error("商品情報の表示に失敗しました。このエラーが繰り返し発生する場合は、管理者にお問い合わせください。")
+        return
 
     st.markdown("以下の商品をご提案いたします。")
 
@@ -72,13 +78,15 @@ def display_product(result):
     # 在庫状況に応じたメッセージ表示
     if 'stock_status' in product:
         if product['stock_status'] == ct.STOCK_STATUS_LOW:
-            st.warning(f"""
-            {ct.STOCK_STATUS_LOW_ICON} {ct.STOCK_STATUS_LOW_MESSAGE}
-            """)
+            st.warning(
+            ct.STOCK_STATUS_LOW_MESSAGE,
+            icon=ct.STOCK_STATUS_LOW_ICON
+            )
         elif product['stock_status'] == ct.STOCK_STATUS_NONE:
-            st.error(f"""
-            {ct.STOCK_STATUS_NONE_ICON} {ct.STOCK_STATUS_NONE_MESSAGE}
-            """)
+            st.error(
+            ct.STOCK_STATUS_NONE_MESSAGE,
+            icon=ct.STOCK_STATUS_NONE_ICON
+            )
 
     # 「商品カテゴリ」と「メーカー」と「ユーザー評価」
     st.code(f"""
